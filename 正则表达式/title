@@ -1,0 +1,35 @@
+import re
+from urllib.request import urlopen
+import bs4
+from bs4 import BeautifulSoup
+
+html = urlopen('http://www.pythonscraping.com/pages/page3.html')
+bs = BeautifulSoup(html, 'html.parser')
+p = re.compile(r'\$')
+pattern = re.compile('\$\d+(?:.*)\.\d+?')
+for sibling in bs.find('table', {'id': 'giftList'}).tr.next_siblings:
+    if type(sibling) is bs4.element.Tag:
+        result = p.findall(sibling.get_text())
+        if result:
+            print(pattern.findall(sibling.get_text())[0])
+
+
+'''
+这个是第二种方法
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import re
+url = 'https://www.pythonscraping.com/pages/page3.html'
+html = urlopen(url)
+bs = BeautifulSoup(html.read(), 'html.parser')
+
+children = bs.findAll('tr', {'class': {'gift'}})
+#print(children)
+pattern = re.compile('\$\d+(?:.*)\.\d+?')
+p=re.compile(r'\$')
+for child in children:
+    price_tag = child.findAll('td', text=p)
+    for next in price_tag:
+        print(pattern.findall(next.get_text())[0])
+
+'''
